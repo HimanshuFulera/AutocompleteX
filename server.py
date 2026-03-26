@@ -35,14 +35,23 @@ def autocomplete():
 @app.route('/add_word', methods=['POST'])
 def add_word():
     data = request.get_json()
-    word = data.get('word', '').strip()
+
+    if not data or 'word' not in data:
+        return jsonify({'error': 'No word provided'}), 400
+
+    word = data['word'].strip()
+
+    if not word:
+        return jsonify({'error': 'Empty word'}), 400
 
     words_file = os.path.join(BASE_DIR, 'shuffled_words.txt')
 
-    with open(words_file, 'a', encoding='utf-8') as f:
-        f.write(word + '\n')
-
-    return jsonify({'message': f'Word "{word}" added successfully'})
+    try:
+        with open(words_file, 'a', encoding='utf-8') as f:
+            f.write(word + '\n')
+        return jsonify({'message': f'Word "{word}" added successfully'})
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':
