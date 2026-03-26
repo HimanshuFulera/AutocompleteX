@@ -1,6 +1,16 @@
+from flask import Flask, request, jsonify, render_template
+from flask_cors import CORS
+import subprocess
 import os
 
+app = Flask(__name__)
+CORS(app)
+
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+@app.route('/')
+def home():
+    return render_template('index.html')
 
 @app.route('/autocomplete', methods=['GET'])
 def autocomplete():
@@ -27,7 +37,7 @@ def add_word():
     data = request.get_json()
     word = data.get('word', '').strip()
 
-    words_file = os.path.join(BASE_DIR, 'words.txt')
+    words_file = os.path.join(BASE_DIR, 'shuffled_words.txt')
 
     with open(words_file, 'a', encoding='utf-8') as f:
         f.write(word + '\n')
